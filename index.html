@@ -1,0 +1,166 @@
+
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.chat-container {
+    background-color: white;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chat-box {
+    width: 100%;
+    height: 300px;
+    background-color: #e5e5e5;
+    overflow-y: scroll;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#linkContainer {
+    margin-top: 20px;
+    font-size: 16px;
+}
+</style>
+        </head>
+        <body>
+          <!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat & Einladungs-Link</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox">
+            <!-- Hier erscheinen die Nachrichten -->
+        </div>
+        <textarea id="message" placeholder="Schreib eine Nachricht..." rows="4" cols="50"></textarea>
+        <button id="sendMessage">Nachricht senden</button>
+        <button id="generateLink">Link generieren</button>
+        <div id="linkContainer">
+            <p>Teile diesen Link, um am Chat teilzunehmen: <span id="generatedLink"></span></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+          <script>// Initialisieren des Chat-Containers und der Nachrichten
+let chatBox = document.getElementById('chatBox');
+let messageInput = document.getElementById('message');
+let generateLinkButton = document.getElementById('generateLink');
+let sendMessageButton = document.getElementById('sendMessage');
+let generatedLink = document.getElementById('generatedLink');
+
+// Nachrichten im lokalen Speicher speichern (wird beim Laden der Seite abgerufen)
+let chatId = new URLSearchParams(window.location.search).get('chatId') || generateChatId();
+
+// Nachrichten anzeigen, wenn die Seite geladen wird
+loadMessages(chatId);
+
+// Funktion zum Senden von Nachrichten
+sendMessageButton.addEventListener('click', () => {
+    let message = messageInput.value.trim();
+    if (message) {
+        // Nachrichten in den lokalen Speicher speichern
+        saveMessage(chatId, message);
+        appendMessage(message, 'me');
+        messageInput.value = ''; // Nachricht zurücksetzen
+    }
+});
+
+// Funktion zum Generieren des Links
+generateLinkButton.addEventListener('click', () => {
+    let link = window.location.href.split('?')[0] + '?chatId=' + chatId;
+    generatedLink.textContent = link;
+});
+
+// Nachricht speichern
+function saveMessage(chatId, message) {
+    let messages = JSON.parse(localStorage.getItem(chatId)) || [];
+    messages.push({ user: 'me', message: message });
+    localStorage.setItem(chatId, JSON.stringify(messages));
+}
+
+// Nachrichten laden
+function loadMessages(chatId) {
+    let messages = JSON.parse(localStorage.getItem(chatId)) || [];
+    messages.forEach(msg => appendMessage(msg.message, msg.user));
+}
+
+// Nachricht in den Chat einfügen
+function appendMessage(message, user) {
+    let messageElement = document.createElement('div');
+    messageElement.classList.add(user === 'me' ? 'message-me' : 'message-other');
+    messageElement.textContent = message;
+    chatBox.appendChild(messageElement);
+    chatBox.scrollTop = chatBox.scrollHeight; // Scrollen zu neuester Nachricht
+}
+
+// Generieren einer neuen Chat-ID, wenn keine in der URL vorhanden ist
+function generateChatId() {
+    let chatId = 'chat_' + Math.random().toString(36).substr(2, 9);
+    return chatId;
+}
+
+
+
+</script>
+        </body>
+        </html>
+      
