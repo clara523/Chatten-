@@ -163,4 +163,57 @@ function generateChatId() {
 </script>
         </body>
         </html>
+
+
+.chat-box img {
+    max-width: 100%;
+    border-radius: 4px;
+    margin: 5px 0;
+}
+
+
+let imageInput = document.getElementById('imageInput');
+
+imageInput.addEventListener('change', () => {
+    let file = imageInput.files[0];
+    if (file && file.type.startsWith('image/')) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            let imageData = e.target.result;
+            saveMessage(chatId, imageData, 'image');
+            appendMessage(imageData, 'me', 'image');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+
+
+function saveMessage(chatId, content, type = 'text') {
+    let messages = JSON.parse(localStorage.getItem(chatId)) || [];
+    messages.push({ user: 'me', type: type, content: content });
+    localStorage.setItem(chatId, JSON.stringify(messages));
+}
+
+function loadMessages(chatId) {
+    let messages = JSON.parse(localStorage.getItem(chatId)) || [];
+    messages.forEach(msg => appendMessage(msg.content, msg.user, msg.type));
+}
+
+function appendMessage(content, user, type = 'text') {
+    let messageElement = document.createElement('div');
+    messageElement.classList.add(user === 'me' ? 'message-me' : 'message-other');
+
+    if (type === 'image') {
+        let img = document.createElement('img');
+        img.src = content;
+        messageElement.appendChild(img);
+    } else {
+        messageElement.textContent = content;
+    }
+
+    chatBox.appendChild(messageElement);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
       
