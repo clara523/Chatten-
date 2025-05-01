@@ -164,3 +164,33 @@ function generateChatId() {
         </body>
         </html>
 
+
+
+<body>
+  <div id="chat">
+    <!-- Nachrichten erscheinen hier -->
+  </div>
+
+  <input type="file" id="imageInput" accept="image/*">
+  <button onclick="sendImage()">Bild senden</button>
+
+  <script>
+    function sendImage() {
+      const input = document.getElementById("imageInput");
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.style.maxWidth = "200px"; // Bildgröße im Chat
+        img.style.display = "block";
+        document.getElementById("chat").appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+
+
